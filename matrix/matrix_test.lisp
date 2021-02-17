@@ -46,8 +46,16 @@
     (assert-equal NIL (are-neighbors '( (1 2 3) ) 1 3))
     (assert-equal T   (are-neighbors '( (1) (2) (3) ) 1 2))
     (assert-equal T   (are-neighbors '( (1 2 3) (4 5 6) ) 1 2))
+    (assert-equal T (are-neighbors '( (1 2 3) (4 5 6) ) 2 3))
+    (assert-equal T (are-neighbors '( (1 2 3) (4 5 6) ) 2 5))
+    (assert-equal T (are-neighbors '( (1 2 3) (4 5 6) ) 3 6))
+    (assert-equal T (are-neighbors '( (1 2 3) (4 5 6) ) 1 4))
     (assert-equal NIL (are-neighbors '( (1 2 3) (4 5 6) ) 2 6))
     (assert-equal NIL (are-neighbors '( (1 2 3) (4 5 6) ) 1 6))
+    (assert-equal T (are-neighbors '( (1 2 3 4) (5 6 7 8) (9 10 11 12) (13 14 15 16) ) 10 6))
+    (assert-equal T (are-neighbors '( (1 2 3 4) (5 6 7 8) (9 10 11 12) (13 14 15 16) ) 12 16))
+    (assert-equal NIL (are-neighbors '( (1 2 3 4) (5 6 7 8) (9 10 11 12) (13 14 15 16) ) 7 15))
+    (assert-equal NIL (are-neighbors '( (1 2 3 4) (5 6 7 8) (9 10 11 12) (13 14 15 16) ) 9 4))
 )
 
 ;;;;;;;;;;;;;;;;;
