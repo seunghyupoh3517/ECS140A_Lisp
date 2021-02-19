@@ -30,16 +30,27 @@
 
     ((equal (car pattern) '?) (match(cdr pattern) (cdr assertion))) ;detect ?
 
-    ((and (equal (car pattern) '!) (equal (cdr pattern) nil) (not (equal (cdr assertion) nil))T)) 
+    ((and (equal (car pattern) '!) (equal (cdr pattern) nil) T)) 
     ; see ! at the end of pattern
     ((equal (car pattern) '!) (or (match pattern (cdr assertion)) (match(cdr pattern) (cdr assertion))) )
-    ; one "or" fail, could go to another. first "or" could find if there is anything after ! that match
-    ; second "or" if there is just one ! means one letter  
-
-    ; find !, find the next matching letter
-    ; 1: if the ! is the last element in pattern, then return true
-    ; 2: if the ! is not the last element, find the letter that match with the letter after ! or ? after cdr assertion 
+    ; match pattern will hold the position of pattern and iterate through assertion
+    ; if it reach the end of assertion, it will go to line 28 and return nil
+    ; go back one step back with pattern and assertion, so the assertion will not be nil
     
+    ; (!) (a b c) 
+    ; (!) (b c)
+    ; (!) (c)
+    ; (!) nil
+    ; go back
+    ; (!) (c)
+    ; nil nil
+    ; T
+
+    ; one "or" fail, could go to another.
+    ; first "or" could find if there is anything after ! that match(go all the way to the end)
+    ; see nil go back one step
+    ; second "or" if there is just one ! means one letter(impoetant condition for moving forward)
+
 
     ((equal (car pattern) (car assertion))  (match(cdr pattern) (cdr assertion)) );rec iterate through
     ; if we miss all matches from cond above but still match the first letter, moving forward

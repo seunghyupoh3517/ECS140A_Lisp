@@ -27,6 +27,7 @@
     (assert-equal NIL (match '(?) nil))
     (assert-equal T (match '(!) '(a)))
     (assert-equal T (match '(!) '(a b c)))
+
     (assert-equal T (match '(! c) '(a b c)))
     (assert-equal NIL (match '(! d) '(a b c)))
     (assert-equal T (match '(? ! c) '(a a b c)))
@@ -36,6 +37,11 @@
     (assert-equal T (match '(? ? ! ? A !) '(A A A A A NIL)))
     (assert-equal T (match '(! B ? B A B A ! ? !) '(B B A B A B A B A B A)))
     (assert-equal NIL (match '(! B ? A B A B ! ? !) '(B B A B A B A B A B)))
+    (assert-equal T (match '(? ! ? ? ?) '(a a b c d))) ;add
+    (assert-equal NIL (match '(? ! ? ? ?) '(a a b c))) ;add
+    (assert-equal T (match '(? ! ? ? !) '(a a b c d))) ;add
+    (assert-equal T (match '(? !) '(a a b c d))); add
+    (assert-equal T (match '(! ?) '(a a b c d))); add
 )
 
 ;;;;;;;;;;;;;;;;;
