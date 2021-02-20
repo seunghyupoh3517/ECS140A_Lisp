@@ -44,11 +44,10 @@ func (g Grammar) Parse(str string) (*SExpr, error) {
 		if err == ErrLexer {
 			return nil, ErrParser
 		} else {
+			tokenList = append(tokenList, token)
 			if token.typ == tokenEOF {
-				tokenList = append(tokenList, token)
 				break
 			}
-			tokenList = append(tokenList, token)
 		}
 	}
 	// pointer point to the current token in the list
@@ -60,13 +59,22 @@ func (g Grammar) Parse(str string) (*SExpr, error) {
 
 // create the SExpr for the matched terminal
 func matchTerminal(token *Token) (*SExpr, error) {
-	// Three type of creation
+	// Three types of creation
 
 
 	// 1. create the nil s-expression
+	se := mkNil()
+	return se, nil
 
 
 	// 2. create the atom s-expression
+	if token.typ == tokenNumber {
+		se := mkNumber(token.num)
+		return se, nil
+	} else if token.typ == tokenSymbol {
+		se := mkAtom(mkSymbol(token.literal))
+		return se, nil
+	}
 
 
 	// 3. create the list s-expression
@@ -83,49 +91,65 @@ func matchTerminal(token *Token) (*SExpr, error) {
 // <New2>        ::= <sexpr> DOT <sexpr> ) | )
 
 // procedure for <sexpr>
-func parse_sexpr() {
-	tokenTyp := tokenList[tokenInd].typ
-	if tokenTyp == tokenNumber || tokenTyp == tokenSymbol {
-		// match the terminal
-		// increment the tokenInd
-	} else if tokenTyp == tokenLpar {
+func parse_sexpr() *SExpr {
+	token := tokenList[tokenInd]
+	switch tokenTyp := token.typ {
+
+	case tokenNumber:
+		se := mkNumber(token.num)
+		tokenInd += 1
+		return se, nil
+
+	case tokenSymbol:
+		se := mkAtom(mkTokenSymbol(token.literal))
+		tokenInd += 1
+		return se, nil
+
+	case tokenLpar:
 		// <sexpr> -> ( <New1>
-
 		// match the (
-		parse_New1()
-	} else if tokenTyp == tokenQuote {
-		// <sexpr> -> QUOTE <sexpr>
+		se := parse_New1()
+		return se,  nil
 
+	case tokenQuote:
+		// <sexpr> -> QUOTE <sexpr>
 		// match the QUOTE
-		parse_sexpr()
+		se := parse_sexpr()
+		return se, nil
+		
+	default:
+		return nil, ErrParser
 	}
 }
 
 // procedure for <proper_list>
-func parse_proper_list() {
+func parse_proper_list() *SExpr {
 	tokenTyp := tokenList[tokenInd].typ
 	if tokenTyp == tokenEOF {
 		// match \epsilon
+		return mkNil()
 	} else {
 		// <proper_list> -> <sexpr> <proper_list>
-		parse_sexpr()
-		parse_proper_list()
+		car := parse_sexpr()
+		cdr := parse_proper_list()
+		return mkConsCell(car, cdr)
 	}
 }
 
 // procedure for <New1>
-func parse_New1() {
-	parse_proper_list()
-	parse_New2()
+func parse_New1() *SExpr {
+	car := parse_proper_list()
+	cdr := parse_New2()
+	return mkConsCell(car, cdr)
 }
 
 // procedure for <New2>
-func parse_New2() {
+func parse_New2() *SExpr {
 	tokenTyp := tokenList[tokenInd].typ
 	if tokenTyp == tokenRpar {
 		// <New2> -> )
-
 		// match the )
+		return mkNil()
 	} else {
 		// <New2> -> <sexpr> DOT <sexpr> )
 		parse_sexpr()
