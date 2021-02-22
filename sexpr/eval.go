@@ -33,9 +33,7 @@ func Car(e *SExpr) *SExpr {
 	}
 }
 
-func Car(expr *SExpr) *Expr{
-	return e.car
-}
+
 
 func (expr *SExpr) Check_atom() *Expr{
 
