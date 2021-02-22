@@ -27,7 +27,6 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 	} else if expr.isAtom() {
 		// single atom expression, no need to evaluate		 
 	 	return nil, ErrEval		// error return
-	//}
 
 	//common line 33 - 66 could pass most of the invalid test
 	} else if expr.isConsCell() {
@@ -35,7 +34,13 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 		//list expression, need to evaluate the element inside
 		if expr.car.atom.literal == "QUOTE"  { 
 			//may need iterate through to see if there is any error term
-			return nil, nil
+
+			se, _ := expr.cdr.Eval()
+			if se == nil {
+				return nil, ErrEval
+			}
+
+			return se, nil
 		}else if expr.car.atom.literal == "+" { 
 			//two situation
 			//first is sum use Addup()
