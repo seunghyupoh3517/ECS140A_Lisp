@@ -16,41 +16,54 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 	//panic("TODO: implement Eval")
 	
 	
-	expr.mkAtom("1")
 
-	expr.isNil()
-	if atom 
+	if (expr.atom == nil && expr.car == nil && expr.cdr == nil){ // 1
+		return nil, ErrEval
+	}
 	
+	if (expr.atom == nil && expr.car != nil){ // list
+		return mkConsCell(expr.car, expr.cdr), ErrEval
+	}
+	
+	if (expr.atom != nil && expr.car == nil && expr.cdr == nil){ //single atom 2
+		return mkAtom(expr.atom), ErrEval
+		
+	}
+	if expr.atom == tokenNumber{
+		return nil, nil
+	}
+	//implement num
+
+	return nil, ErrEval
+}
+
+
+
+// func (expr *SExpr) Check_atom() *Expr{
+
+// 	return True
+// }
+// func (expr *SExpr) Cons(car, cdr *SExpr) *SExpr{
+// 	return &SExpr{car: expr.car, cdr: expr.cdr}
+// }
+
+
+func (expr *SExpr) Check_list() *SExpr{
+	return mkConsCell(expr.car, expr.cdr)
+}
+
+
+
+func (expr *SExpr) Check_Num() *SExpr{
+
 	return nil
 }
-
-func Car(e *SExpr) *SExpr {
-	if e.atom == nil || isAtom == nil{
-		return nil
-	}
-	else {
-		return e.car
-	}
+//https://golang.org/pkg/math/big/?m=all
+func Check_add(add1, add2 *big.Int) *big.Int{
+	return new(big.Int).Add(add1, add2)
 }
 
-
-
-func (expr *SExpr) Check_atom() *Expr{
-
-	return True
-}
-
-func (expr *SExpr) Check_atom() *Expr{
-
-	return True
-}
-
-func (expr *SExpr) Check_Num() *Expr{
-
-	return True
-}
-
-func (expr *SExpr) Check_add() *Expr{
-
+func Check_mult(mult1, mult2 *big.Int) *big.Int{
+	return new(big.Int).Mul(mult1, mult2)
 }
 // func ()
