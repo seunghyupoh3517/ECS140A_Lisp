@@ -6,10 +6,10 @@ import (
 
 func TestEvalInvalid(t *testing.T) {
 	for idx, test := range []string{
-		"x",
-		"(1)",
+		// "x",
+		// "(1)",
 		// "(LENGTH '(1 . 2))", //2
-		"(QUOTE)",
+		// "(QUOTE)",
 		// "(QUOTE 1 2 3 4)",
 		// "(QUOTE . 1)", //5
 		// "(QUOTE . (1 . 2))", //6
@@ -17,6 +17,12 @@ func TestEvalInvalid(t *testing.T) {
 		// "(QUOTE . (1 . 'NIL))", //8
 		// "(CAR)",
 		// "(CAR x)",
+		// "(CAR 'x)",
+
+		"(CAR '(1 2))", // Valid Case!!!!!!!!!!
+		// "(CAR NIL)", // Valid Case
+		// "(CAR '(x))",		// Valid case
+
 		// "(CAR '(1 2) '1)",
 		// "(CDR)",
 		// "(CDR x)",

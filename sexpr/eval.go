@@ -34,36 +34,104 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 		//list expression, need to evaluate the element inside
 		if expr.car.atom.literal == "QUOTE"  { 
 			//may need iterate through to see if there is any error term
-
 			se, _ := expr.cdr.Eval()
 			if se == nil {
 				return nil, ErrEval
 			}
-
 			return se, nil
+
 		}else if expr.car.atom.literal == "+" { 
 			//two situation
 			//first is sum use Addup()
 			//second is positive number
 			return nil, nil
+
 		}else if expr.car.atom.literal == "*" {
 			//multiple use Multp()
 			return nil, nil
+
 		}else if expr.car.atom.literal == "CAR" {
-			//maybe use CAR
-			return nil, nil
+			var se = expr.Cdr()
+			// var temp = se
+
+			// detecting the QUOTE in correct position
+			if se != nil && se.isConsCell() {
+				if se.Car() != nil && se.Car().isConsCell() {
+					se = se.Car()
+					if se.Car().isAtom && se.Car().literal == "QUOTE" {
+						se = se.Cdr()
+						if se.Car().isConsCell {
+							se = se.Car().Car()
+							return se == nil ? mkNil() : se , nil
+						}
+					}
+				}
+			}
+
+			return nil, ErrEval
+
+
+
+
+			// fmt.Println("caaaaaaaaar " + expr.SExprString())
+
+			// fmt.Println("line 56 ----- " + expr.cdr.SExprString())
+
+			// if expr.cdr.isConsCell() {
+			// 	fmt.Println("????????????????????????")
+			// 	fmt.Println("what are you?", expr.cdr.car.SExprString())
+
+			// 	if expr.cdr.car.isNil() {
+			// 		fmt.Println("zhe bu shi tao wa ma?")
+			// 	} else if expr.cdr.car.isAtom() {
+			// 		fmt.Println("ATOMMMMMMMMMMMMMMMMMM")
+			// 	}
+			// }
+
+			// if !expr.cdr.isNil() && expr.cdr.car.atom.literal == "QUOTE" {
+			// 	// se := 
+
+			// 	fmt.Println("------------ line 59")
+			// 	// return expr.cdr, nil
+			// 	return nil, nil
+			// } else if expr.cdr.isNil() {
+			// 	fmt.Println("------------ line 63")
+			// 	return nil, nil
+			// 	// return expr.cdr, nil
+			// }
+
+			// fmt.Println("------------ line 68")
+			// // return nil, ErrEval
+			// return nil, nil
+
+			// if !expr.cdr.isConsCell() || expr.cdr.isNil() {
+			// 	return nil, ErrEval
+			// } else {
+			// 	se := expr.car
+			// 	return se, nil
+			// }
+
 		}else if expr.car.atom.literal == "CDR" {
-			//maybe use CDR
-			return nil, nil
+			fmt.Println("cdddddddddr " + expr.SExprString())
+			if !expr.cdr.isConsCell() || expr.cdr.isNil() {
+				return nil, ErrEval
+			} else {
+				se := expr. cdr
+				return se, nil
+			}
+
 		}else if expr.car.atom.literal == "LENGTH" {
 			//check if there is anything wrong in cdr
 			return nil, nil
+
 		}else if expr.car.atom.literal == "ATOM" {
 			//check if there is more than one thing after atom
 			return nil, nil
+
 		}else if expr.car.atom.literal == "ZEROP" {
 			//check if there any empty 
 			return nil, nil
+
 		}else if expr.car.atom.literal == "LISTP" {
 			//not sure
 			return nil, nil
@@ -125,15 +193,15 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 // func (expr *SExpr) Cons(car, cdr *SExpr) *SExpr{
 // 	return &SExpr{car: expr.car, cdr: expr.cdr}
 // }
-func Car(expr *SExpr) *SExpr{ //should be used for recur function
-	if expr.atom != nil || expr == nil{
+func (expr *SExpr) Car() *SExpr{ //should be used for recur function
+	if expr == nil || expr.atom != nil{
 		return nil
 	}else{
 		return expr.car
 	}
 }
-func Cdr(expr *SExpr) *SExpr{ //should be used for recur function
-	if expr.atom != nil || expr == nil{
+func (expr *SExpr) Cdr() *SExpr{ //should be used for recur function
+	if expr == nil || expr.atom != nil{
 		return nil
 	}else{
 		return expr.cdr
