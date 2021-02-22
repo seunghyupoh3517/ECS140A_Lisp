@@ -79,47 +79,19 @@ func TestEvalArithmeticOperators(t *testing.T) {
 	}
 }
 
-func TestEvalQUOTE(t *testing.T) {
-	for idx, test := range []struct {
-		input, expected string
-	}{
-		{"'1", "1"},
-		{"''1", "(QUOTE . (1 . NIL))"},
-		{"'(1)", "(1 . NIL)"},
-		{"''(1)", "(QUOTE . ((1 . NIL) . NIL))"},
-		{"(QUOTE (1))", "(1 . NIL)"},
-		{"(QUOTE . (1))", "1"},
-		{"(QUOTE . (NIL . NIL))", "NIL"},
-		{"(QUOTE . ('NIL . NIL))", "(QUOTE . (NIL . NIL))"},
-		{"(QUOTE . (('1 . 2) . NIL))", "((QUOTE . (1 . NIL)) . 2)"},
-	} {
-		p := NewParser()
-		sexpr, err := p.Parse(test.input)
-		if err != nil {
-			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test.input)
-			continue
-		}
-		actual, err := sexpr.Eval()
-		if err != nil {
-			t.Errorf("\nin test %d (\"%s\"):\nunexpected eval error", idx, test.input)
-		} else if actual.SExprString() != test.expected {
-			t.Errorf("\nin test %d (\"%s\"):\nerror:\tgot\t\t\t\"%s\"\n\t\texpected\t\"%s\"",
-				idx, test.input, actual.SExprString(), test.expected)
-		}
-	}
-}
-
-// func TestEvalNumber(t *testing.T) {
+// func TestEvalQUOTE(t *testing.T) {
 // 	for idx, test := range []struct {
 // 		input, expected string
 // 	}{
-// 		{"1", "1"},
-// 		{"+1", "1"},
-// 		{"-001", "-1"},
-// 		{
-// 			"-10000000000000000000000000000000000000000000000000000000000000000",
-// 			"-10000000000000000000000000000000000000000000000000000000000000000",
-// 		},
+// 		{"'1", "1"},
+// 		{"''1", "(QUOTE . (1 . NIL))"},
+// 		{"'(1)", "(1 . NIL)"},
+// 		{"''(1)", "(QUOTE . ((1 . NIL) . NIL))"},
+// 		{"(QUOTE (1))", "(1 . NIL)"},
+// 		{"(QUOTE . (1))", "1"},
+// 		{"(QUOTE . (NIL . NIL))", "NIL"},
+// 		{"(QUOTE . ('NIL . NIL))", "(QUOTE . (NIL . NIL))"},
+// 		{"(QUOTE . (('1 . 2) . NIL))", "((QUOTE . (1 . NIL)) . 2)"},
 // 	} {
 // 		p := NewParser()
 // 		sexpr, err := p.Parse(test.input)
@@ -136,6 +108,34 @@ func TestEvalQUOTE(t *testing.T) {
 // 		}
 // 	}
 // }
+
+func TestEvalNumber(t *testing.T) {
+	for idx, test := range []struct {
+		input, expected string
+	}{
+		{"1", "1"},
+		{"+1", "1"},
+		{"-001", "-1"},
+		{
+			"-10000000000000000000000000000000000000000000000000000000000000000",
+			"-10000000000000000000000000000000000000000000000000000000000000000",
+		},
+	} {
+		p := NewParser()
+		sexpr, err := p.Parse(test.input)
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test.input)
+			continue
+		}
+		actual, err := sexpr.Eval()
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected eval error", idx, test.input)
+		} else if actual.SExprString() != test.expected {
+			t.Errorf("\nin test %d (\"%s\"):\nerror:\tgot\t\t\t\"%s\"\n\t\texpected\t\"%s\"",
+				idx, test.input, actual.SExprString(), test.expected)
+		}
+	}
+}
 
 // func TestEvalCAR(t *testing.T) {
 // 	for idx, test := range []struct {

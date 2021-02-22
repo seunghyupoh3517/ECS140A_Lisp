@@ -11,31 +11,72 @@ import (
 // See also https://golang.org/pkg/errors/#New
 // and // https://golang.org/pkg/builtin/#error
 
+
+//go test eval_test.go lexer.go sexpr.go  eval.go parser.go
+//Use this to run test
+
+
+
 var ErrEval = errors.New("eval error")
 
 func (expr *SExpr) Eval() (*SExpr, error) {
-	fmt.Println("1111111111111111111111111111111111111111111111111111111")
+	//fmt.Println("1111111111111111111111111111111111111111111111111111111")
 	if expr.isNil() {
 		// nil expression, no need to evaluate
 		return nil, nil
 	} else if expr.isAtom() {
 		// single atom expression, no need to evaluate		 
 	 	return nil, ErrEval		// error return
+	//}
+
+	//common line 33 - 66 could pass most of the invalid test
 	} else if expr.isConsCell() {
-		fmt.Println("222222222222")
+		//fmt.Println("222222222222")
 		//list expression, need to evaluate the element inside
-		if expr.car.atom.token.literal == "'" || expr.atom.token.literal == "'" { //also tried QUOTE does not work
+		if expr.car.atom.literal == "QUOTE"  { 
+			//may need iterate through to see if there is any error term
 			return nil, nil
-		}else if expr.car.atom.token.literal == "+" || expr.atom.token.literal == "+"{ //check if the symbol is only the symbol or not
-			
+		}else if expr.car.atom.literal == "+" { 
+			//two situation
+			//first is sum use Addup()
+			//second is positive number
 			return nil, nil
-		}else if expr.car.atom.token.literal == "*" || expr.atom.token.literal == "*"{
+		}else if expr.car.atom.literal == "*" {
+			//multiple use Multp()
+			return nil, nil
+		}else if expr.car.atom.literal == "CAR" {
+			//maybe use CAR
+			return nil, nil
+		}else if expr.car.atom.literal == "CDR" {
+			//maybe use CDR
+			return nil, nil
+		}else if expr.car.atom.literal == "LENGTH" {
+			//check if there is anything wrong in cdr
+			return nil, nil
+		}else if expr.car.atom.literal == "ATOM" {
+			//check if there is more than one thing after atom
+			return nil, nil
+		}else if expr.car.atom.literal == "ZEROP" {
+			//check if there any empty 
+			return nil, nil
+		}else if expr.car.atom.literal == "LISTP" {
+			//not sure
 			return nil, nil
 		}
+
 		return nil, ErrEval
 	}
-// I don't know why that literal can not get the symbo
 	
+	/*
+	 I think our parser will reject the single number like line 116 - 122 from eval_test
+	 fmt.Println(expr.car.atom.num) can only get 1 from line 10
+	*/
+	fmt.Println(expr.car.atom.literal) //this will give the leader symbol and it seems correct
+	if expr.isNumber(){ //Can not get the number
+		fmt.Println("1111111111111111111111111111111111111111111111111111111")
+		number := mkNumber(expr.car.atom.num)
+		return number, nil
+	}
 
 	
 	// if (expr.atom == nil && expr.car != nil){ // list
@@ -79,14 +120,14 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 // func (expr *SExpr) Cons(car, cdr *SExpr) *SExpr{
 // 	return &SExpr{car: expr.car, cdr: expr.cdr}
 // }
-func Car(expr *SExpr) *SExpr{
+func Car(expr *SExpr) *SExpr{ //should be used for recur function
 	if expr.atom != nil || expr == nil{
 		return nil
 	}else{
 		return expr.car
 	}
 }
-func Cdr(expr *SExpr) *SExpr{
+func Cdr(expr *SExpr) *SExpr{ //should be used for recur function
 	if expr.atom != nil || expr == nil{
 		return nil
 	}else{
@@ -102,7 +143,12 @@ func (expr *SExpr) Make_list() *SExpr{ //may not correct
 
 func (expr *SExpr) Check_Num() *SExpr{
 
+	//if expr.car.atom.literal == "+"
+	// if the first is + or no symbol, return atom.num
+	//if expr.car.atom.literal == "-"
+	// if the first is -, then reverse the atom.num
 	return nil
+	
 }
 
 //https://golang.org/pkg/math/big/?m=all
