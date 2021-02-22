@@ -2,7 +2,7 @@ package sexpr
 
 import (
 	"errors"
-	"fmt"
+	// "fmt"
 )
 
 // ErrParser is the error value returned by the Parser if the string is not a
@@ -36,9 +36,16 @@ func NewParser() Parser {
 var tokenInd = 0
 var tokenList []*token
 var meetLpar = false
+var quoteFlag = false
 
 // implements the Parser interface
 func (g Grammar) Parse(str string) (*SExpr, error) {
+
+	// fmt.Println(" *** Runtime Info: Line 44 ***")
+	tokenInd = 0
+	meetLpar = false
+	quoteFlag = false
+	tokenList = nil
 
 	// Tokennize the input string
 	lex := newLexer(str)
@@ -65,10 +72,6 @@ func (g Grammar) Parse(str string) (*SExpr, error) {
 	if (tokenInd != len(tokenList) - 1) {
 		return nil, ErrParser
 	}
-
-	tokenInd = 0
-	meetLpar = false
-	tokenList = nil
 
 	return se, error
 }
@@ -118,8 +121,7 @@ func parse_sexpr() (*SExpr, error) {
 	case tokenNumber:
 		se := mkNumber(token.num)
 		tokenInd += 1
-		if !meetLpar && len(tokenList) > 2{
-			//meetLpar = false
+		if !meetLpar && !quoteFlag && len(tokenList) > 2{
 			return nil, ErrParser
 		}
 		return se, nil
@@ -127,11 +129,17 @@ func parse_sexpr() (*SExpr, error) {
 	case tokenSymbol:
 		se := mkAtom(mkTokenSymbol(token.literal))
 		tokenInd += 1
-		if !meetLpar && len(tokenList) > 2{
-			fmt.Println(" *** token length ", len(tokenList))
-			//meetLpar = false
+
+		// check for invalid case  X ) 
+		// add the quote_flag to prevent falling into the stop case
+		if !meetLpar && !quoteFlag && len(tokenList) > 2{
+			// fmt.Println(" *** token length ", len(tokenList))
 			return nil, ErrParser
 		}
+
+		// TODO: How to deal with 'a
+
+
 		return se, nil
 
 	case tokenLpar:
@@ -153,6 +161,7 @@ func parse_sexpr() (*SExpr, error) {
 		// <sexpr> -> QUOTE <sexpr>
 		// match the QUOTE
 		tokenInd += 1
+		quoteFlag = true
 		quote_se := mkSymbol("QUOTE")
 		// se, error := parse_sexpr()
 		// return se, nil
@@ -161,7 +170,20 @@ func parse_sexpr() (*SExpr, error) {
 		if err != nil {
 			return nil, ErrParser
 		}
-		return mkConsCell(quote_se, cdr), nil
+	
+		cdr2 := mkConsCell(cdr, mkNil())
+		return mkConsCell(quote_se, cdr2), nil
+		
+		// if cdr.isAtom() {
+		// 	fmt.Println(" *** Runtime info *** : Line 166")
+		// 	cdr2 := mkConsCell(cdr, mkNil())
+		// 	return mkConsCell(quote_se, cdr2), nil
+		// } else {			
+		// 	fmt.Println(" *** Runtime info *** : Line 169")
+		// 	cdr2 := mkConsCell(cdr, mkNil())
+		// 	return mkConsCell(quote_se, cdr2), nil
+		// }
+		
 		
 	default:
 		return nil, ErrParser

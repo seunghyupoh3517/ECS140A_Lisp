@@ -88,17 +88,17 @@ func TestParserProperList(t *testing.T) {
 		{"a", "A"},
 
 		// proper lists
-		// {"(())", "(NIL . NIL)"},
-		// {"(a)", "(A . NIL)"},
-		// {"((a))", "((A . NIL) . NIL)"},
-		// {"(a b c)", "(A . (B . (C . NIL)))"},
-		// {"(a b c d)", "(A . (B . (C . (D . NIL))))"},
-		// {"(  a b c  d  e)", "(A . (B . (C . (D . (E . NIL)))))"},
-		// {"(  (a b )c)", "((A . (B . NIL)) . (C . NIL))"},
-		// {"(a b (c d))", "(A . (B . ((C . (D . NIL)) . NIL)))"},
-		// {"(a () () a)", "(A . (NIL . (NIL . (A . NIL))))"},
+		{"(())", "(NIL . NIL)"},
+		{"(a)", "(A . NIL)"},
+		{"((a))", "((A . NIL) . NIL)"},
+		{"(a b c)", "(A . (B . (C . NIL)))"},
+		{"(a b c d)", "(A . (B . (C . (D . NIL))))"},
+		{"(  a b c  d  e)", "(A . (B . (C . (D . (E . NIL)))))"},
+		{"(  (a b )c)", "((A . (B . NIL)) . (C . NIL))"},
+		{"(a b (c d))", "(A . (B . ((C . (D . NIL)) . NIL)))"},
+		{"(a () () a)", "(A . (NIL . (NIL . (A . NIL))))"},
 
-		// dotted lists
+		// // dotted lists
 		// {"(a (b . c))", "(A . ((B . C) . NIL))"},
 		// {"(a . b)", "(A . B)"},
 		// {"(a . (b . c))", "(A . (B . C))"},
@@ -125,23 +125,23 @@ func TestParserProperList(t *testing.T) {
 	}
 }
 
-// func TestParseQuote(t *testing.T) {
-// 	for idx, test := range []struct {
-// 		input, expectedSExpr string
-// 	}{
-// 		{"'(1 2)", "(QUOTE . ((1 . (2 . NIL)) . NIL))"},
-// 		{"'(1 . 2)", "(QUOTE . ((1 . 2) . NIL))"},
-// 		{"(quote . (1 . 2))", "(QUOTE . (1 . 2))"},
-// 		{"'a", "(QUOTE . (A . NIL))"},
-// 		{"'(a)", "(QUOTE . ((A . NIL) . NIL))"},
-// 		{"''a", "(QUOTE . ((QUOTE . (A . NIL)) . NIL))"},
-// 		{"''(a)", "(QUOTE . ((QUOTE . ((A . NIL) . NIL)) . NIL))"},
-// 		{"(' a 'b '  c)", "((QUOTE . (A . NIL)) . ((QUOTE . (B . NIL)) . ((QUOTE . (C . NIL)) . NIL)))"},
-// 	} {
-// 		actual, _ := NewParser().Parse(test.input)
-// 		if actual.SExprString() != test.expectedSExpr {
-// 			t.Errorf("\nerror: in test %d (\"%s\"):\n\texpected: %s\n\tgot      %s",
-// 				idx, test.input, test.expectedSExpr, actual.SExprString())
-// 		}
-// 	}
-// }
+func TestParseQuote(t *testing.T) {
+	for idx, test := range []struct {
+		input, expectedSExpr string
+	}{
+		{"'(1 2)", "(QUOTE . ((1 . (2 . NIL)) . NIL))"},
+		// {"'(1 . 2)", "(QUOTE . ((1 . 2) . NIL))"},
+		// {"(quote . (1 . 2))", "(QUOTE . (1 . 2))"},
+		{"'a", "(QUOTE . (A . NIL))"},
+		{"'(a)", "(QUOTE . ((A . NIL) . NIL))"},
+		{"''a", "(QUOTE . ((QUOTE . (A . NIL)) . NIL))"},
+		{"''(a)", "(QUOTE . ((QUOTE . ((A . NIL) . NIL)) . NIL))"},
+		{"(' a 'b '  c)", "((QUOTE . (A . NIL)) . ((QUOTE . (B . NIL)) . ((QUOTE . (C . NIL)) . NIL)))"},
+	} {
+		actual, _ := NewParser().Parse(test.input)
+		if actual.SExprString() != test.expectedSExpr {
+			t.Errorf("\nerror: in test %d (\"%s\"):\n\texpected: %s\n\tgot      %s",
+				idx, test.input, test.expectedSExpr, actual.SExprString())
+		}
+	}
+}
