@@ -273,7 +273,10 @@ func parse_New2() (*SExpr, error) {
 	}
 }
 
-func backtrack(){
+// saved mkConsCell from previous - steps
+func backtrack() (*SExpr, error) {
+	tokenInd = // reset the index and restart over 
 
-	
+
+	return mkConsCell(), nil // what was inside the particular step
 }
