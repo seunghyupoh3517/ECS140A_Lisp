@@ -2,7 +2,7 @@ package sexpr
 
 import (
 	"errors"
-	//"math/big" // You will need to use this package in your implementation.
+	"math/big" // You will need to use this package in your implementation.
 )
 
 // ErrEval is the error value returned by the Evaluator if the contains
@@ -29,8 +29,17 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 		return mkAtom(expr.atom), ErrEval
 		
 	}
-	if expr.atom == tokenNumber{
-		return nil, nil
+
+
+
+	if expr.atom.literal == "+"{ //should detect the symbol first
+		
+		plus := mkNumber(Check_add(expr.car.atom.num, expr.cdr.atom.num))
+		return plus, nil
+	}
+	if expr.atom.literal == "*"{ //should detect the symbol first
+		mul := mkNumber(Check_mult(expr.car.atom.num, expr.cdr.atom.num))
+		return mul, nil
 	}
 	//implement num
 
@@ -46,9 +55,22 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 // func (expr *SExpr) Cons(car, cdr *SExpr) *SExpr{
 // 	return &SExpr{car: expr.car, cdr: expr.cdr}
 // }
+func Car(expr *SExpr) *SExpr{
+	if expr.atom != nil || expr == nil{
+		return nil
+	}else{
+		return expr.car
+	}
+}
+func Cdr(expr *SExpr) *SExpr{
+	if expr.atom != nil || expr == nil{
+		return nil
+	}else{
+		return expr.cdr
+	}
+}
 
-
-func (expr *SExpr) Check_list() *SExpr{
+func (expr *SExpr) Make_list() *SExpr{ //may not correct
 	return mkConsCell(expr.car, expr.cdr)
 }
 
