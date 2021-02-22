@@ -58,11 +58,17 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 			if se != nil && se.isConsCell() {
 				if se.Car() != nil && se.Car().isConsCell() {
 					se = se.Car()
-					if se.Car().isAtom && se.Car().literal == "QUOTE" {
+					if se.Car().isAtom() && se.Car().atom.literal == "QUOTE" {
 						se = se.Cdr()
-						if se.Car().isConsCell {
+						// unwrap the cons the extract the car in the cons
+						if se.Car().isConsCell() {
 							se = se.Car().Car()
-							return se == nil ? mkNil() : se , nil
+							// check for the Nil 
+							if se == nil {
+								return mkNil(), nil
+							} else {
+								return se, nil
+							}
 						}
 					}
 				}

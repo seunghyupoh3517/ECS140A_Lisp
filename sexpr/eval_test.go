@@ -2,6 +2,7 @@ package sexpr
 
 import (
 	"testing"
+	"fmt"
 )
 
 func TestEvalInvalid(t *testing.T) {
@@ -19,7 +20,7 @@ func TestEvalInvalid(t *testing.T) {
 		// "(CAR x)",
 		// "(CAR 'x)",
 
-		"(CAR '(1 2))", // Valid Case!!!!!!!!!!
+		// "(CAR '(1 2))", // Valid Case!!!!!!!!!!
 		// "(CAR NIL)", // Valid Case
 		// "(CAR '(x))",		// Valid case
 
@@ -64,26 +65,27 @@ func TestEvalInvalid(t *testing.T) {
 		}
 	}
 }
-// WILL PASS THIS TEST I AM NOT SURE THIS INVOLVE ANY EVAL
+
+
 // The evaluation of symbols `*` and `+` should result in error in MiniLisp.
 // Note: this behavior differs from that in CLISP.
-// func TestEvalArithmeticOperators(t *testing.T) {
-// 	for idx, test := range []string{
-// 		"*",
-// 		"+",
-// 	} {
-// 		p := NewParser()
-// 		sexpr, err := p.Parse(test)
-// 		if err != nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test)
-// 			continue
-// 		}
-// 		_, err = sexpr.Eval()
-// 		if err == nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\n\terror: should get an eval error", idx, test)
-// 		}
-// 	}
-// }
+func TestEvalArithmeticOperators(t *testing.T) {
+	for idx, test := range []string{
+		"*",
+		"+",
+	} {
+		p := NewParser()
+		sexpr, err := p.Parse(test)
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test)
+			continue
+		}
+		_, err = sexpr.Eval()
+		if err == nil {
+			t.Errorf("\nin test %d (\"%s\"):\n\terror: should get an eval error", idx, test)
+		}
+	}
+}
 
 // func TestEvalQUOTE(t *testing.T) {
 // 	for idx, test := range []struct {
@@ -143,29 +145,34 @@ func TestEvalInvalid(t *testing.T) {
 // 	}
 // }
 
-// func TestEvalCAR(t *testing.T) {
-// 	for idx, test := range []struct {
-// 		input, expected string
-// 	}{
-// 		// {"(CAR NIL)", "NIL"},
-// 		{"(CAR '(1 2))", "1"},
-// 		{"(CAR '(1 . 2))", "1"},
-// 	} {
-// 		p := NewParser()
-// 		sexpr, err := p.Parse(test.input)
-// 		if err != nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test.input)
-// 			continue
-// 		}
-// 		actual, err := sexpr.Eval()
-// 		if err != nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\nunexpected eval error", idx, test.input)
-// 		} else if actual.SExprString() != test.expected {
-// 			t.Errorf("\nin test %d (\"%s\"):\nerror:\tgot\t\t\t\"%s\"\n\t\texpected\t\"%s\"",
-// 				idx, test.input, actual.SExprString(), test.expected)
-// 		}
-// 	}
-// }
+
+func TestEvalCAR(t *testing.T) {
+	for idx, test := range []struct {
+		input, expected string
+	}{
+		{"(CAR NIL)", "NIL"},		// Not Passing the Nil. Double check the return type
+		// {"(CAR '(1 2))", "1"},
+		// {"(CAR '(1 . 2))", "1"},
+	} {
+		p := NewParser()
+		sexpr, err := p.Parse(test.input)
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test.input)
+			continue
+		}
+
+		fmt.Println(" *** Runtime check: " + sexpr.SExprString() + " ****")
+
+
+		actual, err := sexpr.Eval()
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected eval error", idx, test.input)
+		} else if actual.SExprString() != test.expected {
+			t.Errorf("\nin test %d (\"%s\"):\nerror:\tgot\t\t\t\"%s\"\n\t\texpected\t\"%s\"",
+				idx, test.input, actual.SExprString(), test.expected)
+		}
+	}
+}
 
 // func TestEvalCONS(t *testing.T) {
 // 	for idx, test := range []struct {
