@@ -3,6 +3,7 @@ package sexpr
 import (
 	"errors"
 	"math/big" // You will need to use this package in your implementation.
+	"fmt"
 )
 
 // ErrEval is the error value returned by the Evaluator if the contains
@@ -13,24 +14,29 @@ import (
 var ErrEval = errors.New("eval error")
 
 func (expr *SExpr) Eval() (*SExpr, error) {
-	
+	fmt.Println("1111111111111111111111111111111111111111111111111111111")
 	if expr.isNil() {
 		// nil expression, no need to evaluate
 		return nil, nil
 	} else if expr.isAtom() {
 		// single atom expression, no need to evaluate		 
-		return nil, ErrEval		// error return
-
+	 	return nil, ErrEval		// error return
 	} else if expr.isConsCell() {
-		// list expression, need to evaluate the element inside
-		return nil, nil
-
-	} 
+		fmt.Println("222222222222")
+		//list expression, need to evaluate the element inside
+		if expr.car.atom.token.literal == "'" || expr.atom.token.literal == "'" { //also tried QUOTE does not work
+			return nil, nil
+		}else if expr.car.atom.token.literal == "+" || expr.atom.token.literal == "+"{ //check if the symbol is only the symbol or not
+			
+			return nil, nil
+		}else if expr.car.atom.token.literal == "*" || expr.atom.token.literal == "*"{
+			return nil, nil
+		}
+		return nil, ErrEval
+	}
+// I don't know why that literal can not get the symbo
 	
 
-	// if (expr.atom == nil && expr.car == nil && expr.cdr == nil){ // 1
-	// 	return nil, ErrEval
-	// }
 	
 	// if (expr.atom == nil && expr.car != nil){ // list
 	// 	return mkConsCell(expr.car, expr.cdr), ErrEval
@@ -40,19 +46,26 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 	// 	return mkAtom(expr.atom), ErrEval
 		
 	// }
+	//fmt.Println("1111111111111111111111111111111111111111111111111111111")
+// 	if expr.isSymbol() { // check add or mult
+// 		//fmt.Println(expr.car.atom.num) //not sure if you guys implement + and *
+// 	    fmt.Println("444444444444444444444444444")
+// 	   if expr.atom.typ.tokenSymbol == "+"{ //should detect the symbol first
+// 		fmt.Println("333333333333333333333")
+// 		   add := mkNumber(Addup(expr.car.atom.num, expr.cdr.atom.num))
+// 		   //fmt.Println(expr.car.atom.num)
+// 		   return add,nil
+// 	   }else if expr.atom.toekn.literal == "*"{ //should detect the symbol first
+// 		fmt.Println("5555555555555555555")
+// 		   mul := mkNumber(Multp(expr.car.atom.num, expr.cdr.atom.num))
+// 		   return mul, nil
+// 	   }else if expr.atom.token.literal == "Quote"{
+// 		fmt.Println("6666666666666666666666")
+// 		   return mkNumber(expr.cdr.atom.num), nil
+// 	   }
+//    }
 
 
-
-	// if expr.atom.literal == "+"{ //should detect the symbol first
-		
-	// 	plus := mkNumber(Check_add(expr.car.atom.num, expr.cdr.atom.num))
-	// 	return plus, nil
-	// }
-	// if expr.atom.literal == "*"{ //should detect the symbol first
-	// 	mul := mkNumber(Check_mult(expr.car.atom.num, expr.cdr.atom.num))
-	// 	return mul, nil
-	// }
-	//implement num
 
 	return nil, ErrEval
 }
@@ -93,11 +106,11 @@ func (expr *SExpr) Check_Num() *SExpr{
 }
 
 //https://golang.org/pkg/math/big/?m=all
-func Check_add(add1, add2 *big.Int) *big.Int{
+func Addup(add1, add2 *big.Int) *big.Int{
 	return new(big.Int).Add(add1, add2)
 }
 
-func Check_mult(mult1, mult2 *big.Int) *big.Int{
+func Multp(mult1, mult2 *big.Int) *big.Int{
 	return new(big.Int).Mul(mult1, mult2)
 }
 // func ()

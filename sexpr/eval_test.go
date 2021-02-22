@@ -8,13 +8,13 @@ func TestEvalInvalid(t *testing.T) {
 	for idx, test := range []string{
 		"x",
 		"(1)",
-		"(LENGTH '(1 . 2))",
+		"(LENGTH '(1 . 2))", //2
 		"(QUOTE)",
 		"(QUOTE 1 2 3 4)",
-		"(QUOTE . 1)",
-		"(QUOTE . (1 . 2))",
+		"(QUOTE . 1)", //5
+		"(QUOTE . (1 . 2))", //6
 		"(QUOTE 1 2)",
-		"(QUOTE . (1 . 'NIL))",
+		"(QUOTE . (1 . 'NIL))", //8
 		"(CAR)",
 		"(CAR x)",
 		"(CAR '(1 2) '1)",
@@ -58,56 +58,56 @@ func TestEvalInvalid(t *testing.T) {
 		}
 	}
 }
+// WILL PASS THIS TEST I AM NOT SURE THIS INVOLVE ANY EVAL
+// The evaluation of symbols `*` and `+` should result in error in MiniLisp.
+// Note: this behavior differs from that in CLISP.
+func TestEvalArithmeticOperators(t *testing.T) {
+	for idx, test := range []string{
+		"*",
+		"+",
+	} {
+		p := NewParser()
+		sexpr, err := p.Parse(test)
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test)
+			continue
+		}
+		_, err = sexpr.Eval()
+		if err == nil {
+			t.Errorf("\nin test %d (\"%s\"):\n\terror: should get an eval error", idx, test)
+		}
+	}
+}
 
-// // The evaluation of symbols `*` and `+` should result in error in MiniLisp.
-// // Note: this behavior differs from that in CLISP.
-// func TestEvalArithmeticOperators(t *testing.T) {
-// 	for idx, test := range []string{
-// 		"*",
-// 		"+",
-// 	} {
-// 		p := NewParser()
-// 		sexpr, err := p.Parse(test)
-// 		if err != nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test)
-// 			continue
-// 		}
-// 		_, err = sexpr.Eval()
-// 		if err == nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\n\terror: should get an eval error", idx, test)
-// 		}
-// 	}
-// }
-
-// func TestEvalQUOTE(t *testing.T) {
-// 	for idx, test := range []struct {
-// 		input, expected string
-// 	}{
-// 		{"'1", "1"},
-// 		{"''1", "(QUOTE . (1 . NIL))"},
-// 		{"'(1)", "(1 . NIL)"},
-// 		{"''(1)", "(QUOTE . ((1 . NIL) . NIL))"},
-// 		{"(QUOTE (1))", "(1 . NIL)"},
-// 		{"(QUOTE . (1))", "1"},
-// 		{"(QUOTE . (NIL . NIL))", "NIL"},
-// 		{"(QUOTE . ('NIL . NIL))", "(QUOTE . (NIL . NIL))"},
-// 		{"(QUOTE . (('1 . 2) . NIL))", "((QUOTE . (1 . NIL)) . 2)"},
-// 	} {
-// 		p := NewParser()
-// 		sexpr, err := p.Parse(test.input)
-// 		if err != nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test.input)
-// 			continue
-// 		}
-// 		actual, err := sexpr.Eval()
-// 		if err != nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\nunexpected eval error", idx, test.input)
-// 		} else if actual.SExprString() != test.expected {
-// 			t.Errorf("\nin test %d (\"%s\"):\nerror:\tgot\t\t\t\"%s\"\n\t\texpected\t\"%s\"",
-// 				idx, test.input, actual.SExprString(), test.expected)
-// 		}
-// 	}
-// }
+func TestEvalQUOTE(t *testing.T) {
+	for idx, test := range []struct {
+		input, expected string
+	}{
+		{"'1", "1"},
+		{"''1", "(QUOTE . (1 . NIL))"},
+		{"'(1)", "(1 . NIL)"},
+		{"''(1)", "(QUOTE . ((1 . NIL) . NIL))"},
+		{"(QUOTE (1))", "(1 . NIL)"},
+		{"(QUOTE . (1))", "1"},
+		{"(QUOTE . (NIL . NIL))", "NIL"},
+		{"(QUOTE . ('NIL . NIL))", "(QUOTE . (NIL . NIL))"},
+		{"(QUOTE . (('1 . 2) . NIL))", "((QUOTE . (1 . NIL)) . 2)"},
+	} {
+		p := NewParser()
+		sexpr, err := p.Parse(test.input)
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test.input)
+			continue
+		}
+		actual, err := sexpr.Eval()
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected eval error", idx, test.input)
+		} else if actual.SExprString() != test.expected {
+			t.Errorf("\nin test %d (\"%s\"):\nerror:\tgot\t\t\t\"%s\"\n\t\texpected\t\"%s\"",
+				idx, test.input, actual.SExprString(), test.expected)
+		}
+	}
+}
 
 // func TestEvalNumber(t *testing.T) {
 // 	for idx, test := range []struct {
