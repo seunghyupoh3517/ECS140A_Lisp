@@ -35,7 +35,7 @@ func NewParser() Parser {
 
 var tokenInd = 0
 var tokenList []*token
-var parenPairs = 0
+var meetLpar = false
 
 // implements the Parser interface
 func (g Grammar) Parse(str string) (*SExpr, error) {
@@ -62,6 +62,7 @@ func (g Grammar) Parse(str string) (*SExpr, error) {
 	// var se = &SExpr{}
 	var se, error = parse_sexpr()
 	tokenInd = 0
+	meetLpar = false
 	tokenList = nil
 	return se, error
 
@@ -112,7 +113,8 @@ func parse_sexpr() (*SExpr, error) {
 	case tokenNumber:
 		se := mkNumber(token.num)
 		tokenInd += 1
-		if parenPairs == 0 && length(tokenList) > 1{
+		if !meetLpar && len(tokenList) > 1{
+			//meetLpar = false
 			return nil, ErrParser
 		}
 		return se, nil
@@ -120,7 +122,8 @@ func parse_sexpr() (*SExpr, error) {
 	case tokenSymbol:
 		se := mkAtom(mkTokenSymbol(token.literal))
 		tokenInd += 1
-		if parenPairs == 0 && length(tokenList) > 1{
+		if !meetLpar && len(tokenList) > 1{
+			//meetLpar = false
 			return nil, ErrParser
 		}
 		return se, nil
@@ -128,6 +131,7 @@ func parse_sexpr() (*SExpr, error) {
 	case tokenLpar:
 		// <sexpr> -> ( <New1>
 		// match the (
+		meetLpar = true
 		tokenInd += 1
 		se, error := parse_New1()
 		if error == nil {
