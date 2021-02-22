@@ -2,7 +2,7 @@ package sexpr
 
 import (
 	"errors"
-	// "fmt"
+	"fmt"
 )
 
 // ErrParser is the error value returned by the Parser if the string is not a
@@ -61,11 +61,16 @@ func (g Grammar) Parse(str string) (*SExpr, error) {
 
 	// var se = &SExpr{}
 	var se, error = parse_sexpr()
+
+	if (tokenInd != len(tokenList) - 1) {
+		return nil, ErrParser
+	}
+
 	tokenInd = 0
 	meetLpar = false
 	tokenList = nil
-	return se, error
 
+	return se, error
 }
 
 // create the SExpr for the matched terminal
@@ -113,7 +118,7 @@ func parse_sexpr() (*SExpr, error) {
 	case tokenNumber:
 		se := mkNumber(token.num)
 		tokenInd += 1
-		if !meetLpar && len(tokenList) > 1{
+		if !meetLpar && len(tokenList) > 2{
 			//meetLpar = false
 			return nil, ErrParser
 		}
@@ -122,7 +127,8 @@ func parse_sexpr() (*SExpr, error) {
 	case tokenSymbol:
 		se := mkAtom(mkTokenSymbol(token.literal))
 		tokenInd += 1
-		if !meetLpar && len(tokenList) > 1{
+		if !meetLpar && len(tokenList) > 2{
+			fmt.Println(" *** token length ", len(tokenList))
 			//meetLpar = false
 			return nil, ErrParser
 		}
@@ -147,9 +153,15 @@ func parse_sexpr() (*SExpr, error) {
 		// <sexpr> -> QUOTE <sexpr>
 		// match the QUOTE
 		tokenInd += 1
+		quote_se := mkSymbol("QUOTE")
 		// se, error := parse_sexpr()
 		// return se, nil
-		return parse_sexpr()
+		cdr, err := parse_sexpr()
+
+		if err != nil {
+			return nil, ErrParser
+		}
+		return mkConsCell(quote_se, cdr), nil
 		
 	default:
 		return nil, ErrParser
@@ -162,7 +174,9 @@ func parse_proper_list() (*SExpr, error) {
 	se, error := parse_sexpr()
 	
 	if error != nil {
-		return mkNil(), ErrParser
+		// can't go deeper
+		// do back tracking and let proper_list -> e
+		return mkNil(), nil		
 	} else {
 		car := se
 		cdr, error := parse_proper_list()
@@ -176,8 +190,12 @@ func parse_New1() (*SExpr, error) {
 	se, error := parse_proper_list()
 	// parse_New2()
 	if error == nil {
-		parse_New2()
-		return se, nil
+		_, error2 := parse_New2()
+		if error2 == nil {
+			return se, nil
+		} else {
+			return nil, ErrParser
+		}
 	} else {
 		return nil, ErrParser
 	}
@@ -193,12 +211,35 @@ func parse_New2() (*SExpr, error) {
 		return mkNil(), nil
 	} else {
 		// <New2> -> <sexpr> DOT <sexpr> )
-		parse_sexpr()
-		// TODO: check match DOT 
-		parse_sexpr()
-		// TODO: check mathch )
+
+		se1, err1 := parse_sexpr()
+
+		if err1 != nil {
+			return nil, ErrParser
+		}
+
+		// match DOT 
+		if tokenList[tokenInd].typ == tokenDot {
+			tokenInd++;
+		} else {
+			return nil, ErrParser
+		}
+
+		se2, err2 := parse_sexpr()
+
+		if err2 != nil {
+			return nil, ErrParser
+		} 
+
+		// check mathch )
+		if tokenList[tokenInd].typ == tokenRpar {
+			tokenInd++;
+		} else {
+			return nil, ErrParser
+		}
+
 		// Double Check!!
-		return mkNil(), nil
+		return mkConsCell(se1, se2), nil
 	}
 }
 
