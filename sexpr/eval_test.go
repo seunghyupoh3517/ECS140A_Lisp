@@ -2,26 +2,26 @@ package sexpr
 
 import (
 	"testing"
-	"fmt"
+	// "fmt"
 )
 
 func TestEvalInvalid(t *testing.T) {
 	for idx, test := range []string{
-		// "x",
-		// "(1)",
+		"x",
+		"(1)",
 		// // "(LENGTH '(1 . 2))", //2
-		// "(QUOTE)",
-		// "(QUOTE 1 2 3 4)",
+		"(QUOTE)",
+		"(QUOTE 1 2 3 4)",
 		// // // "(QUOTE . 1)", //5
 		// // "(QUOTE . (1 . 2))", //6
-		// "(QUOTE 1 2)",
+		"(QUOTE 1 2)",
 		// // "(QUOTE . (1 . 'NIL))", //8
-		// "(CAR)",
-		// "(CAR x)",
-		// "(CAR 'x)",
-		// "(CAR '(1 2) '1)",		
-		// "(CDR)",
-		// "(CDR x)",
+		"(CAR)",
+		"(CAR x)",
+		"(CAR 'x)",
+		"(CAR '(1 2) '1)",		
+		"(CDR)",
+		"(CDR x)",
 		// "(CONS)",
 		// "(CONS 1 2 3)",
 		// "(CONS x 1)",
@@ -69,8 +69,8 @@ func TestEvalInvalid(t *testing.T) {
 // Note: this behavior differs from that in CLISP.
 func TestEvalArithmeticOperators(t *testing.T) {
 	for idx, test := range []string{
-		// "*",
-		// "+",
+		"*",
+		"+",
 	} {
 		p := NewParser()
 		sexpr, err := p.Parse(test)
@@ -135,7 +135,7 @@ func TestEvalNumber(t *testing.T) {
 		}
 
 
-		fmt.Println( " ****** eval_test: ", sexpr.SExprString())
+		// fmt.Println( " ****** eval_test: ", sexpr.SExprString())
 
 		actual, err := sexpr.Eval()
 		if err != nil {
@@ -152,10 +152,10 @@ func TestEvalCAR(t *testing.T) {
 	for idx, test := range []struct {
 		input, expected string
 	}{
-		// {"(CAR NIL)", "NIL"},		// Not Passing the Nil. Double check the return type
-		// {"(CAR '(1 2))", "1"},
-		// {"(CAR '(12 2 3 4))", "12"},
-		// {"(CAR '(a b b c))", "A"},
+		// {"(CAR NIL)", "NIL"},	
+		{"(CAR '(1 2))", "1"},
+		{"(CAR '(12 2 3 4))", "12"},
+		{"(CAR '(a b b c))", "A"},
 		// // {"(CAR '(1 . 2))", "1"},
 	} {
 		p := NewParser()
@@ -210,8 +210,8 @@ func TestEvalCDR(t *testing.T) {
 		input, expected string
 	}{
 		// {"(CDR NIL)", "NIL"},
-		// {"(CDR '(1 2))", "(2 . NIL)"},
-		// {"(CDR '(1 2 3))", "(2 . (3 . NIL))"},
+		{"(CDR '(1 2))", "(2 . NIL)"},
+		{"(CDR '(1 2 3))", "(2 . (3 . NIL))"},
 		// // {"(CDR '(1 . 2))", "2"},
 	} {
 		p := NewParser()
@@ -266,13 +266,13 @@ func TestEvalCDR(t *testing.T) {
 // 	for idx, test := range []struct {
 // 		input, expected string
 // 	}{
-// 		{"(+)", "0"},
-// 		{"(+ 1)", "1"},
-// 		{"(+ 1 2)", "3"},
-// 		{"(+ 1 2 3)", "6"},
-// 		{"(+ 1 2 3 4)", "10"},
-// 		{"(+ 1 (+ 2 3))", "6"},
-// 		{"(+ 1 (+ 2 3) -4)", "2"},
+// 		// {"(+)", "0"},
+// 		// {"(+ 1)", "1"},
+// 		// {"(+ 1 2)", "3"},
+// 		// {"(+ 1 2 3)", "6"},
+// 		// {"(+ 1 2 3 4)", "10"},
+// 		// {"(+ 1 (+ 2 3))", "6"},
+// 		// {"(+ 1 (+ 2 3) -4)", "2"},
 // 		{
 // 			"(+ 1841869746456711357943187984 78943132489451238944879231278)",
 // 			"80785002235907950302822419262",

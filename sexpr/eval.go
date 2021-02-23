@@ -22,6 +22,7 @@ var ErrEval = errors.New("eval error")
 func (expr *SExpr) Eval() (*SExpr, error) {
 	if expr.isNil() {
 		// nil expression, no need to evaluate
+		// TODO: Double check if we need to return nil-expression
 		return nil, nil
 	} else if expr.isAtom() {
 		// single atom expression, no need to evaluate	
@@ -35,6 +36,9 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 	//common line 33 - 66 could pass most of the invalid test
 	} else if expr.isConsCell() {
 		
+		// fmt.Println(" **** Debug  info:   Line 39")
+
+
 		//list expression, need to evaluate the element inside
 		if expr.car.atom.literal == "QUOTE"  { 
 			//may need iterate through to see if there is any error term
@@ -45,6 +49,9 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 			return se, nil
 
 		}else if expr.car.atom.literal == "+" { 
+
+			// fmt.Println(" **** Debug  info:   Line 53")
+
 			//two situation
 			//first is sum use Addup()
 			//second is positive number
@@ -54,13 +61,20 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 			//multiple use Multp()
 			return nil, nil
 
-		}else if expr.car.atom.literal == "CAR" {
+		}else if expr.car.atom.literal == "CAR" {			
 			var se = expr.Cdr()
 
-			// detecting the QUOTE in correct position
-			if se != nil && se.isConsCell() {
+			// fmt.Println(" **** Debug  info:   Line 67")
 
-				if se.Car() != nil && se.Car().isConsCell() && se.Cdr().isNil() {
+			// detecting the QUOTE in correct position
+			if !se.isNil() && se.isConsCell() {
+				// fmt.Println(" **** Debug  info:   Line 71")
+				// fmt.Println(" **** Debug  info:   se =", se.SExprString())
+				// fmt.Println(" **** Debug  info:   nil =", se.isNil())
+				// fmt.Println(" **** Debug  info:   se.car =", se.Car().SExprString())
+				// fmt.Println(" **** Debug  info:   se.cdr =", se.Cdr().SExprString())
+
+				if se.Car() != nil && se.Car().isConsCell() && se.Cdr().isNil() {				
 					se = se.Car()
 					if se.Car().isAtom() && se.Car().atom.literal == "QUOTE" {
 						se = se.Cdr()
@@ -75,7 +89,7 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 							}
 						}
 					}
-				} else if se.Car().atom.literal == "NIL" {
+				} else if !se.isConsCell() && se.Car().atom.literal == "NIL" {
 					// TODO: Double check if we find Nil by using .atom()
 					return mkNil(), nil
 				}
@@ -87,7 +101,7 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 			var se = expr.Cdr()
 			
 			// detecting the QUOTE in correct position
-			if se != nil && se.isConsCell() {
+			if se.Car() != nil && se.isConsCell() {
 				if se.Car() != nil && se.Car().isConsCell() && se.Cdr().isNil() {
 					// fmt.Println(" ********* Debug info: Line 85")
 					se =se.Car()
@@ -106,7 +120,7 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 						}
 
 					}
-				} else if se.Car().atom.literal == "NIL" {
+				} else if  !se.isConsCell() && se.Car().atom.literal == "NIL" {
 					return mkNil(), nil
 				}
 			}
