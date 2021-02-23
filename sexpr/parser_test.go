@@ -99,19 +99,36 @@ func TestParserProperList(t *testing.T) {
 		{"(a () () a)", "(A . (NIL . (NIL . (A . NIL))))"},
 
 		// dotted lists
-		{"(a (b . c))", "(A . ((B . C) . NIL))"},
-		{"(a . b)", "(A . B)"},
-		{"(a . (b . c))", "(A . (B . C))"},
-		{"(a . (b . (c . d)))", "(A . (B . (C . D)))"},
-		{"(a . ((b . c) . d))", "(A . ((B . C) . D))"},
-		{"(a b . c)", "(A . (B . C))"},
-		{"(a b c . d)", "(A . (B . (C . D)))"},
-		{"(a (b c) d . e)", "(A . ((B . (C . NIL)) . (D . E)))"},
-		{"(a b (c d) . e)", "(A . (B . ((C . (D . NIL)) . E)))"},
-		{"(a b c . (d e))", "(A . (B . (C . (D . (E . NIL)))))"},
-		{"(a b c . (d . e))", "(A . (B . (C . (D . E))))"},
-		{"(a(b.c  ))", "(A . ((B . C) . NIL))"},
-		{"(a . ( (  ) . ( ( ) . a)))", "(A . (NIL . (NIL . A)))"},
+		{"(a (b . c))", "(A . ((B . C) . NIL))"}, // parenthesis: 2 pairs dot: 1 sym: 3 -> PL 1 // Rule1 o
+		{"(a . b)", "(A . B)"}, // p: 2 dot: 1 sym: 2 -> PL 0 // Rule1 o
+		{"(a . (b . c))", "(A . (B . C))"}, // p: 2 dot: 2 sym: 3 -> PL 0  // Rule1 o
+		{"(a . (b . (c . d)))", "(A . (B . (C . D)))"}, // p: 3 dot: 3 sym: 4 -> PL 0 // Rule1 o 
+		{"(a . ((b . c) . d))", "(A . ((B . C) . D))"}, // p: 3 dot: 3 sym: 4 -> PL 0 // Not sure if our grammar works for this
+		{"(a b . c)", "(A . (B . C))"}, // p: 2 dot : 1 sym: 3 -> PL  1 // Rule1 o
+		{"(a b c . d)", "(A . (B . (C . D)))"}, // p: 2 dot: 1 sym: 4 -> PL 2 // Rule1 o
+		{"(a (b c) d . e)", "(A . ((B . (C . NIL)) . (D . E)))"}, // p: 2 dot: 1 sym:5 -> PL ... // Rule1 o
+		{"(a b (c d) . e)", "(A . (B . ((C . (D . NIL)) . E)))"}, // p: 2 dot: 1 sym:5 
+		{"(a b c . (d e))", "(A . (B . (C . (D . (E . NIL)))))"}, // p: 2 dot: 1 sym:5
+		{"(a b c . (d . e))", "(A . (B . (C . (D . E))))"}, // p: 2 dot: 2 sym: 5
+		{"(a(b.c  ))", "(A . ((B . C) . NIL))"}, // p: 2  dot: 1 sym: 3
+		{"(a . ( (  ) . ( ( ) . a)))", "(A . (NIL . (NIL . A)))"}, // p: 4 dot: 3 sym: 2
+		// No relevance between parenthesis and dots but <new> and parenthesis has relevance 
+		// Need to find relation between proper_list and dot
+
+		// from the current tokenIndex if there are dot between [current tokenIndex, current tokenIndex + 2]
+		// then <Proper_list> will always have to go to production rule of epsilon - properFlag = True
+		// properFlag = False back to off as the tokenIndex increase and there's no dot in the range - Rule1
+
+		// N2 production Rule  - Rule 2
+
+		// Whether S to have terminal or N2 to have terminal - Rule 3
+		// if the [current tokenIndex, current tokenIndex + 1]
+
+		// Not using the rule - backtracking but where to stop and where to come back and what data to be restored and begin from
+		// It would be better to ( tokenIndex - a ) start from the one of the beginning step with regulation on the production rules
+		// when there has been an error 
+
+		
 	} {
 		actual, err := NewParser().Parse(test.input)
 		if err != nil {
