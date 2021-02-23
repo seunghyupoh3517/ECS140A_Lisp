@@ -3,7 +3,7 @@ package sexpr
 import (
 	"errors"
 	"math/big" // You will need to use this package in your implementation.
-	"fmt"
+	// "fmt"
 )
 
 // ErrEval is the error value returned by the Evaluator if the contains
@@ -20,7 +20,6 @@ import (
 var ErrEval = errors.New("eval error")
 
 func (expr *SExpr) Eval() (*SExpr, error) {
-	//fmt.Println("1111111111111111111111111111111111111111111111111111111")
 	if expr.isNil() {
 		// nil expression, no need to evaluate
 		return nil, nil
@@ -52,11 +51,16 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 
 		}else if expr.car.atom.literal == "CAR" {
 			var se = expr.Cdr()
-			// var temp = se
 
 			// detecting the QUOTE in correct position
 			if se != nil && se.isConsCell() {
-				if se.Car() != nil && se.Car().isConsCell() {
+				// fmt.Println(" ****** Debug info: Line 58")
+				// fmt.Println(" ****** Debug info, se =", se.SExprString())
+				// fmt.Println(" ****** Debug info, se.car =", se.Car().isAtom())
+
+				if se.Car() != nil && se.Car().isConsCell() && se.Cdr().isNil() {
+					// fmt.Println(" ****** Debug info: Line 61")
+
 					se = se.Car()
 					if se.Car().isAtom() && se.Car().atom.literal == "QUOTE" {
 						se = se.Cdr()
@@ -71,60 +75,44 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 							}
 						}
 					}
+				} else if se.Car().atom.literal == "NIL" {
+					// TODO: Double check if we find Nil by using .atom()
+					// fmt.Println(" ****** Debug info: Line 78")
+					return mkNil(), nil
 				}
 			}
 
 			return nil, ErrEval
 
-
-
-
-			// fmt.Println("caaaaaaaaar " + expr.SExprString())
-
-			// fmt.Println("line 56 ----- " + expr.cdr.SExprString())
-
-			// if expr.cdr.isConsCell() {
-			// 	fmt.Println("????????????????????????")
-			// 	fmt.Println("what are you?", expr.cdr.car.SExprString())
-
-			// 	if expr.cdr.car.isNil() {
-			// 		fmt.Println("zhe bu shi tao wa ma?")
-			// 	} else if expr.cdr.car.isAtom() {
-			// 		fmt.Println("ATOMMMMMMMMMMMMMMMMMM")
-			// 	}
-			// }
-
-			// if !expr.cdr.isNil() && expr.cdr.car.atom.literal == "QUOTE" {
-			// 	// se := 
-
-			// 	fmt.Println("------------ line 59")
-			// 	// return expr.cdr, nil
-			// 	return nil, nil
-			// } else if expr.cdr.isNil() {
-			// 	fmt.Println("------------ line 63")
-			// 	return nil, nil
-			// 	// return expr.cdr, nil
-			// }
-
-			// fmt.Println("------------ line 68")
-			// // return nil, ErrEval
-			// return nil, nil
-
-			// if !expr.cdr.isConsCell() || expr.cdr.isNil() {
-			// 	return nil, ErrEval
-			// } else {
-			// 	se := expr.car
-			// 	return se, nil
-			// }
-
 		}else if expr.car.atom.literal == "CDR" {
-			fmt.Println("cdddddddddr " + expr.SExprString())
-			if !expr.cdr.isConsCell() || expr.cdr.isNil() {
-				return nil, ErrEval
-			} else {
-				se := expr. cdr
-				return se, nil
+			var se = expr.Cdr()
+			
+			// detecting the QUOTE in correct position
+			if se != nil && se.isConsCell() {
+				if se.Car() != nil && se.Car().isConsCell() && se.Cdr().isNil() {
+					// fmt.Println(" ********* Debug info: Line 85")
+					se =se.Car()
+					if se.Car().isAtom() && se.Car().atom.literal == "QUOTE" {
+						// fmt.Println(" ********* Debug info: Line 88")
+						se = se.Cdr()
+						// unwrap the cons, extract the cdr in the cons
+						if se.Car().isConsCell() {
+							// fmt.Println(" ********* Debug info: Line 92")
+							se = se.Car().Cdr()
+							if se == nil {
+								return mkNil(), nil
+							} else {
+								return se, nil
+							}
+						}
+
+					}
+				} else if se.Car().atom.literal == "NIL" {
+					return mkNil(), nil
+				}
 			}
+
+			return nil, ErrEval
 
 		}else if expr.car.atom.literal == "LENGTH" {
 			//check if there is anything wrong in cdr
@@ -150,42 +138,12 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 	 I think our parser will reject the single number like line 116 - 122 from eval_test
 	 fmt.Println(expr.car.atom.num) can only get 1 from line 10
 	*/
-	fmt.Println(expr.car.atom.literal) //this will give the leader symbol and it seems correct
-	if expr.isNumber(){ //Can not get the number
-		fmt.Println("1111111111111111111111111111111111111111111111111111111")
-		number := mkNumber(expr.car.atom.num)
-		return number, nil
-	}
-
-	
-	// if (expr.atom == nil && expr.car != nil){ // list
-	// 	return mkConsCell(expr.car, expr.cdr), ErrEval
+	// fmt.Println(expr.car.atom.literal) //this will give the leader symbol and it seems correct
+	// if expr.isNumber(){ //Can not get the number
+	// 	fmt.Println("1111111111111111111111111111111111111111111111111111111")
+	// 	number := mkNumber(expr.car.atom.num)
+	// 	return number, nil
 	// }
-	
-	// if (expr.atom != nil && expr.car == nil && expr.cdr == nil){ //single atom 2
-	// 	return mkAtom(expr.atom), ErrEval
-		
-	// }
-	//fmt.Println("1111111111111111111111111111111111111111111111111111111")
-// 	if expr.isSymbol() { // check add or mult
-// 		//fmt.Println(expr.car.atom.num) //not sure if you guys implement + and *
-// 	    fmt.Println("444444444444444444444444444")
-// 	   if expr.atom.typ.tokenSymbol == "+"{ //should detect the symbol first
-// 		fmt.Println("333333333333333333333")
-// 		   add := mkNumber(Addup(expr.car.atom.num, expr.cdr.atom.num))
-// 		   //fmt.Println(expr.car.atom.num)
-// 		   return add,nil
-// 	   }else if expr.atom.toekn.literal == "*"{ //should detect the symbol first
-// 		fmt.Println("5555555555555555555")
-// 		   mul := mkNumber(Multp(expr.car.atom.num, expr.cdr.atom.num))
-// 		   return mul, nil
-// 	   }else if expr.atom.token.literal == "Quote"{
-// 		fmt.Println("6666666666666666666666")
-// 		   return mkNumber(expr.cdr.atom.num), nil
-// 	   }
-//    }
-
-
 
 	return nil, ErrEval
 }
@@ -238,4 +196,3 @@ func Addup(add1, add2 *big.Int) *big.Int{
 func Multp(mult1, mult2 *big.Int) *big.Int{
 	return new(big.Int).Mul(mult1, mult2)
 }
-// func ()

@@ -2,29 +2,24 @@ package sexpr
 
 import (
 	"testing"
-	"fmt"
+	// "fmt"
 )
 
 func TestEvalInvalid(t *testing.T) {
 	for idx, test := range []string{
 		// "x",
 		// "(1)",
-		// "(LENGTH '(1 . 2))", //2
+		// // "(LENGTH '(1 . 2))", //2
 		// "(QUOTE)",
 		// "(QUOTE 1 2 3 4)",
-		// "(QUOTE . 1)", //5
-		// "(QUOTE . (1 . 2))", //6
+		// // // "(QUOTE . 1)", //5
+		// // "(QUOTE . (1 . 2))", //6
 		// "(QUOTE 1 2)",
-		// "(QUOTE . (1 . 'NIL))", //8
+		// // "(QUOTE . (1 . 'NIL))", //8
 		// "(CAR)",
 		// "(CAR x)",
 		// "(CAR 'x)",
-
-		// "(CAR '(1 2))", // Valid Case!!!!!!!!!!
-		// "(CAR NIL)", // Valid Case
-		// "(CAR '(x))",		// Valid case
-
-		// "(CAR '(1 2) '1)",
+		// "(CAR '(1 2) '1)",		
 		// "(CDR)",
 		// "(CDR x)",
 		// "(CONS)",
@@ -59,6 +54,9 @@ func TestEvalInvalid(t *testing.T) {
 			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test)
 			continue
 		}
+
+		// fmt.Println(" *** Runtime check: " + sexpr.SExprString() + " ****")
+
 		_, err = sexpr.Eval()
 		if err == nil {
 			t.Errorf("\nin test %d (\"%s\"):\n\terror: should get an eval error", idx, test)
@@ -151,7 +149,9 @@ func TestEvalCAR(t *testing.T) {
 		input, expected string
 	}{
 		{"(CAR NIL)", "NIL"},		// Not Passing the Nil. Double check the return type
-		// {"(CAR '(1 2))", "1"},
+		{"(CAR '(1 2))", "1"},
+		{"(CAR '(12 2 3 4))", "12"},
+		{"(CAR '(a b b c))", "A"},
 		// {"(CAR '(1 . 2))", "1"},
 	} {
 		p := NewParser()
@@ -161,7 +161,7 @@ func TestEvalCAR(t *testing.T) {
 			continue
 		}
 
-		fmt.Println(" *** Runtime check: " + sexpr.SExprString() + " ****")
+		// fmt.Println(" *** Runtime check: " + sexpr.SExprString() + " ****")
 
 
 		actual, err := sexpr.Eval()
@@ -199,29 +199,39 @@ func TestEvalCAR(t *testing.T) {
 // 		}
 // 	}
 // }
-// func TestEvalCDR(t *testing.T) {
-// 	for idx, test := range []struct {
-// 		input, expected string
-// 	}{
-// 		{"(CDR NIL)", "NIL"},
-// 		{"(CDR '(1 2))", "(2 . NIL)"},
-// 		{"(CDR '(1 . 2))", "2"},
-// 	} {
-// 		p := NewParser()
-// 		sexpr, err := p.Parse(test.input)
-// 		if err != nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test.input)
-// 			continue
-// 		}
-// 		actual, err := sexpr.Eval()
-// 		if err != nil {
-// 			t.Errorf("\nin test %d (\"%s\"):\nunexpected eval error", idx, test.input)
-// 		} else if actual.SExprString() != test.expected {
-// 			t.Errorf("\nin test %d (\"%s\"):\nerror:\tgot\t\t\t\"%s\"\n\t\texpected\t\"%s\"",
-// 				idx, test.input, actual.SExprString(), test.expected)
-// 		}
-// 	}
-// }
+
+
+func TestEvalCDR(t *testing.T) {
+	for idx, test := range []struct {
+		input, expected string
+	}{
+		{"(CDR NIL)", "NIL"},
+		{"(CDR '(1 2))", "(2 . NIL)"},
+		{"(CDR '(1 2 3))", "(2 . (3 . NIL))"},
+		// {"(CDR '(1 . 2))", "2"},
+	} {
+		p := NewParser()
+		sexpr, err := p.Parse(test.input)
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected parse error", idx, test.input)
+			continue
+		}
+
+		// fmt.Println(" *** Runtime check: " + sexpr.SExprString() + " ****")
+
+
+		actual, err := sexpr.Eval()
+		if err != nil {
+			t.Errorf("\nin test %d (\"%s\"):\nunexpected eval error", idx, test.input)
+		} else if actual.SExprString() != test.expected {
+			t.Errorf("\nin test %d (\"%s\"):\nerror:\tgot\t\t\t\"%s\"\n\t\texpected\t\"%s\"",
+				idx, test.input, actual.SExprString(), test.expected)
+		}
+	}
+}
+
+
+
 // func TestEvalLENGTH(t *testing.T) {
 // 	for idx, test := range []struct {
 // 		input, expected string
