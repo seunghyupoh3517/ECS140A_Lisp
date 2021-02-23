@@ -24,12 +24,17 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 		// nil expression, no need to evaluate
 		return nil, nil
 	} else if expr.isAtom() {
-		// single atom expression, no need to evaluate		 
+		// single atom expression, no need to evaluate	
+		
+		if expr.isNumber() {
+			return expr, nil
+		}
+
 	 	return nil, ErrEval		// error return
 
 	//common line 33 - 66 could pass most of the invalid test
 	} else if expr.isConsCell() {
-		//fmt.Println("222222222222")
+		
 		//list expression, need to evaluate the element inside
 		if expr.car.atom.literal == "QUOTE"  { 
 			//may need iterate through to see if there is any error term
@@ -54,13 +59,8 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 
 			// detecting the QUOTE in correct position
 			if se != nil && se.isConsCell() {
-				// fmt.Println(" ****** Debug info: Line 58")
-				// fmt.Println(" ****** Debug info, se =", se.SExprString())
-				// fmt.Println(" ****** Debug info, se.car =", se.Car().isAtom())
 
 				if se.Car() != nil && se.Car().isConsCell() && se.Cdr().isNil() {
-					// fmt.Println(" ****** Debug info: Line 61")
-
 					se = se.Car()
 					if se.Car().isAtom() && se.Car().atom.literal == "QUOTE" {
 						se = se.Cdr()
@@ -77,7 +77,6 @@ func (expr *SExpr) Eval() (*SExpr, error) {
 					}
 				} else if se.Car().atom.literal == "NIL" {
 					// TODO: Double check if we find Nil by using .atom()
-					// fmt.Println(" ****** Debug info: Line 78")
 					return mkNil(), nil
 				}
 			}
